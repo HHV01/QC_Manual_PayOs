@@ -1,0 +1,3655 @@
+{
+	"info": {
+		"_postman_id": "a6244937-e465-452a-8064-d104b768f2dc",
+		"name": "PayOS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "20003634",
+		"_collection_link": "https://gold-shadow-10659.postman.co/workspace/PayOS~10c37090-cfd3-4dbf-8b9b-2d760e7bb87d/collection/20003634-a6244937-e465-452a-8064-d104b768f2dc?action=share&source=collection_link&creator=20003634"
+	},
+	"item": [
+		{
+			"name": "my.payos.vn",
+			"item": [
+				{
+					"name": "Login",
+					"item": [
+						{
+							"name": "Positive tests",
+							"item": [
+								{
+									"name": "Login success",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json();",
+													"",
+													"// Kiểm tra mã trạng thái phản hồi là 200",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"// Kiểm tra response có desc là success",
+													"pm.test(\"Desc is success\", function () {",
+													"    pm.expect(jsonData.desc).to.eql(\"success\");",
+													"});",
+													"",
+													"",
+													"// Kiểm tra response có token ",
+													"pm.test(\"Token exists\", function () {",
+													"    pm.expect(jsonData.data).to.have.property('token');",
+													"    pm.environment.set(\"access_token\", jsonData.data.token);",
+													"});",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{email}}\",\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login unverified email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"pm.test(\"success\", function () {\r",
+													"    pm.expect(pm.response.text()).to.include(\"success\");\r",
+													"});\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Code is 00\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"00\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"tocdocuarua@gmail.com\",\r\n    \"password\": \"263fec58861449aacc1c328a4aff64aff4c62df4a2d50b3f207fa89b6e242c9aa778e7a8baeffef85b6ca6d2e7dc16ff0a760d59c13c238f6bcdc32f8ce9cc62\"\r\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "https://sandbox.api.payos.vn/auth/sign-in"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative tests Copy",
+							"item": [
+								{
+									"name": "Login with incorrect pwd",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 401\r",
+													"pm.test(\"Status code is 401\", function () {\r",
+													"    pm.response.to.have.status(401);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is Kết hợp email và mật khẩu không chính xác, vui lòng thử lại thông tin khác\", function () {\r",
+													"    pm.expect(jsonData.desc).to.eql(\"Kết hợp email và mật khẩu không chính xác, vui lòng thử lại thông tin khác\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 401\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"401\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"pm.variables.set(\"incorrect_pwd\", \"6b137473186211c5f8fc0cf42f54cf8edb646248576aafbae9e1992a4fe9bd66b26da5530e4e7410e58ed4a6c25cf9173e6a3f2335b405710574991e8aa1fa64\")"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{email}}\",\"password\":\"{{incorrect_pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login with empty pwd",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is password không đúng định dạng\", function () {\r",
+													"    pm.expect(jsonData.desc).to.eql(\"password không đúng định dạng\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{email}}\",\"password\":\"\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login without pwd",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is password không đúng định dạng\", function () {\r",
+													"    pm.expect(jsonData.desc).to.equal(\"password không đúng định dạng\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{email}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login with not existed email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is Không tìm thấy người dùng\", function () {\r",
+													"    pm.expect(jsonData.desc).to.eql(\"Không tìm thấy người dùng\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 226\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"226\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Function to generate a unique email",
+													"function generateUniqueEmail() {",
+													"    var timestamp = new Date().getTime(); // Get current timestamp",
+													"    var randomPart = Math.random().toString(36).substring(2, 15); // Generate a random string",
+													"    var domain = \"gmail.com\"; // Set the domain part of the email",
+													"    return randomPart + timestamp + \"@\" + domain; // Concatenate to form the email",
+													"}",
+													"",
+													"pm.variables.set(\"non_existed_email\", generateUniqueEmail())"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{non_existed_email}}\",\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login with wrong format email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {\r",
+													"    pm.expect(jsonData.desc).to.eql(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Array of wrong format emails",
+													"const wrongEmails = [",
+													"    \"plainaddress\",",
+													"    \"missingatsign.com\",",
+													"    \"wrong@format@@domain.com\",",
+													"    \"wrong@domain..com\",",
+													"    \"space in@domain.com\",",
+													"    \"email@domain@domain.com\",",
+													"    \"email@domain.com (extra space)\",",
+													"    \"email@-domain.com\",",
+													"    \"@nodomain\",",
+													"    \"specialchar#@domain.com\",",
+													"    \"email@domain.c\",",
+													"    \"email@domain_toolongtoolongtoolongtoolongtoolongtoolong.com\"",
+													"];",
+													"",
+													"// Function to select a random wrong format email",
+													"function getRandomWrongEmail() {",
+													"    const randomIndex = Math.floor(Math.random() * wrongEmails.length);",
+													"    return wrongEmails[randomIndex];",
+													"}",
+													"",
+													"// Set the randomly selected wrong email in an environment variable",
+													"pm.variables.set(\"wrong_format_email\", getRandomWrongEmail())"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{wrong_format_email}}\",\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login with empty email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is email không được để trống, Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {\r",
+													"    pm.expect(jsonData.desc).to.eql(\"email không được để trống, Email không đúng định dạng cho phép, vui lòng thử mail khác.\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"\",\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login without email",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is email không được để trống, Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {\r",
+													"    pm.expect(jsonData.desc).to.equal(\"email không được để trống, Email không đúng định dạng cho phép, vui lòng thử mail khác.\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login with email blank",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 200\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra desc \r",
+													"pm.test(\"Desc is Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {\r",
+													"    pm.expect(jsonData.desc).to.eql(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\");\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra code\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"// Array of wrong format emails",
+													"const wrongEmails = [",
+													"    \"plainaddress\",",
+													"    \"missingatsign.com\",",
+													"    \"wrong@format@@domain.com\",",
+													"    \"wrong@domain..com\",",
+													"    \"space in@domain.com\",",
+													"    \"email@domain@domain.com\",",
+													"    \"email@domain.com (extra space)\",",
+													"    \"email@-domain.com\",",
+													"    \"@nodomain\",",
+													"    \"specialchar#@domain.com\",",
+													"    \"email@domain.c\",",
+													"    \"email@domain_toolongtoolongtoolongtoolongtoolongtoolong.com\"",
+													"];",
+													"",
+													"// Function to select a random wrong format email",
+													"function getRandomWrongEmail() {",
+													"    const randomIndex = Math.floor(Math.random() * wrongEmails.length);",
+													"    return wrongEmails[randomIndex];",
+													"}",
+													"",
+													"// Set the randomly selected wrong email in an environment variable",
+													"pm.environment.set(\"wrong_format_email\", getRandomWrongEmail());"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"      \",\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								},
+								{
+									"name": "Login Wrong method",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"\r",
+													"// Kiểm tra mã trạng thái phản hồi là 404\r",
+													"pm.test(\"Status code is 404\", function () {\r",
+													"    pm.response.to.have.status(404);\r",
+													"});\r",
+													"\r",
+													"// Kiểm tra response có message là success\r",
+													"pm.test(\"message is Endpoint not found.\", function () {\r",
+													"    pm.expect(jsonData.message).to.eql(\"Endpoint not found.\");\r",
+													"});\r",
+													"\r",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true,
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"email\":\"{{email}}\",\"password\":\"{{pwd}}\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-in",
+										"description": "### Sign-in API\n\nThis API endpoint is used to authenticate and sign in the user.\n\n#### Request\n\n- Method: POST\n- URL: `{{env}}auth/sign-in`\n- Body:\n    \n    - `email` (text, required): The email address of the user.\n    - `password` (text, required): The password for the user's account. It's convert string to HASH Data (SHA-512). You able to convert by using link online: [https://www.onlinewebtoolkit.com/hash-generator](https://www.onlinewebtoolkit.com/hash-generator)\n        \n\n#### Response\n\nThe response for this request is a JSON object with the following schema:\n\n``` json\n{\n  \"type\": \"object\",\n  \"properties\": {\n    \"code\": {\n      \"type\": \"string\"\n    },\n    \"desc\": {\n      \"type\": \"string\"\n    },\n    \"data\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"token\": {\n          \"type\": \"string\"\n        },\n        \"refreshToken\": {\n          \"type\": \"string\"\n        },\n        \"expiresAt\": {\n          \"type\": \"number\"\n        },\n        \"id\": {\n          \"type\": \"string\"\n        },\n        \"first_name\": {\n          \"type\": \"string\"\n        },\n        \"last_name\": {\n          \"type\": \"string\"\n        },\n        \"avatar_url\": {\n          \"type\": [\"string\", \"null\"]\n        },\n        \"email\": {\n          \"type\": \"string\"\n        }\n      }\n    }\n  }\n}\n\n ```\n\nThe response contains a status code of 200 and the content type is `application/json`."
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Register",
+					"item": [
+						{
+							"name": "Negative tests",
+							"item": [
+								{
+									"name": "Tai_Khoan_Da_Ton_Tai Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Email này đã tồn tại\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Email này đã tồn tại\");",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"last_name\":\"123\",\"first_name\":\"123\",\"email\":\"kimtuyen.nd2505@gmail.com\",\"password\":\"3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-up"
+									},
+									"response": []
+								},
+								{
+									"name": "Email_De_Trong Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Email để trống\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"email không được để trống, Email không đúng định dạng cho phép, vui lòng thử mail khác.\");",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"last_name\":\"123\",\"first_name\":\"ww123\",\"email\":\"\",\"password\":\"3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-up"
+									},
+									"response": []
+								},
+								{
+									"name": "Email_Khong_Dung_Dinh_Dang Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()",
+													"pm.test(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\");",
+													"});",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"pm.test(\"Code is 20\", function () {",
+													"    pm.expect(jsonData.code).to.eql(\"20\");",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"last_name\":\"123\",\"first_name\":\"ww123\",\"email\":\"ww@ư.com\",\"password\":\"3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-up"
+									},
+									"response": []
+								},
+								{
+									"name": "Last_name để trống Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Last_name để trống\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"last_name không được để trống\")",
+													"});",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"last_name\":\"\",\"first_name\":\"123\",\"email\":\"123@gmail.com\",\"password\":\"3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-up"
+									},
+									"response": []
+								},
+								{
+									"name": "First_name để trống Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"First_name để trống\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"first_name không được để trống\")",
+													"});",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"last_name\":\"123\",\"first_name\":\"\",\"email\":\"123@gmail.com\",\"password\":\"3c9909afec25354d551dae21590bb26e38d53f2173b8d3dc3eee4c047e7ab1c1eb8b85103e3be7ba613b31bb5c9c36214dc9f14a42fd7a2fdb84856bca5c44c2\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/sign-up"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "dashboard Copy",
+					"item": [
+						{
+							"name": "Overview_all",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{env}}/organizations/{{id}}/statistics/payment-link/chart"
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_24h",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var isPerformanceSupported = (",
+											"    pm.performance &&",
+											"    pm.performance.now &&",
+											"    pm.performance.timing &&",
+											"    pm.performance.timing.navigationStart",
+											");",
+											"",
+											"var timeStampInMs = (",
+											"    isPerformanceSupported ?",
+											"    pm.performance.now() +",
+											"    pm.performance.timing.navigationStart :",
+											"    Date.now()",
+											");",
+											"",
+											"console.log(timeStampInMs, Date.now());",
+											"pm.collectionVariables.set(\"From\", (Date.now()/1000)-(60*60*24));",
+											"",
+											"pm.collectionVariables.set(\"To\", Date.now()/1000);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate={{From}}&toDate={{To}}",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "{{From}}"
+										},
+										{
+											"key": "toDate",
+											"value": "{{To}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_7Day",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var isPerformanceSupported = (",
+											"    pm.performance &&",
+											"    pm.performance.now &&",
+											"    pm.performance.timing &&",
+											"    pm.performance.timing.navigationStart",
+											");",
+											"",
+											"var timeStampInMs = (",
+											"    isPerformanceSupported ?",
+											"    pm.performance.now() +",
+											"    pm.performance.timing.navigationStart :",
+											"    Date.now()",
+											");",
+											"",
+											"console.log(timeStampInMs, Date.now());",
+											"pm.collectionVariables.set(\"From\", (Date.now()/1000)-(60*60*24*7));",
+											"",
+											"pm.collectionVariables.set(\"To\", Date.now()/1000);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate={{From}}&toDate={{To}}",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "{{From}}"
+										},
+										{
+											"key": "toDate",
+											"value": "{{To}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_30Day",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var isPerformanceSupported = (",
+											"    pm.performance &&",
+											"    pm.performance.now &&",
+											"    pm.performance.timing &&",
+											"    pm.performance.timing.navigationStart",
+											");",
+											"",
+											"var timeStampInMs = (",
+											"    isPerformanceSupported ?",
+											"    pm.performance.now() +",
+											"    pm.performance.timing.navigationStart :",
+											"    Date.now()",
+											");",
+											"",
+											"console.log(timeStampInMs, Date.now());",
+											"pm.collectionVariables.set(\"From\", (Date.now()/1000)-(60*60*24*30));",
+											"",
+											"pm.collectionVariables.set(\"To\", Date.now()/1000);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate={{From}}&toDate={{To}}&=",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "{{From}}"
+										},
+										{
+											"key": "toDate",
+											"value": "{{To}}"
+										},
+										{
+											"key": null,
+											"value": ""
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_1Year",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var isPerformanceSupported = (",
+											"    pm.performance &&",
+											"    pm.performance.now &&",
+											"    pm.performance.timing &&",
+											"    pm.performance.timing.navigationStart",
+											");",
+											"",
+											"var timeStampInMs = (",
+											"    isPerformanceSupported ?",
+											"    pm.performance.now() +",
+											"    pm.performance.timing.navigationStart :",
+											"    Date.now()",
+											");",
+											"",
+											"console.log(timeStampInMs, Date.now());",
+											"pm.collectionVariables.set(\"From\", (Date.now()/1000)-(60*60*24*365));",
+											"",
+											"pm.collectionVariables.set(\"To\", Date.now()/1000);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"",
+											"pm.test(\"Response status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate={{From}}&toDate={{To}}",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "{{From}}"
+										},
+										{
+											"key": "toDate",
+											"value": "{{To}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_lastYear",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate=1672506000&toDate=1704041999",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1672506000"
+										},
+										{
+											"key": "toDate",
+											"value": "1704041999"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_year",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id_organization}}/statistics/payment-link/chart?fromDate=1704042000&toDate=1735664399",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id_organization}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1704042000"
+										},
+										{
+											"key": "toDate",
+											"value": "1735664399"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_lastMonth",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate=1711904400&toDate=1714496399",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1711904400"
+										},
+										{
+											"key": "toDate",
+											"value": "1714496399"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_month",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate=1714496400&toDate=1717174799",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1714496400"
+										},
+										{
+											"key": "toDate",
+											"value": "1717174799"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_today",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate=1715446800&toDate=1715533199",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1715446800"
+										},
+										{
+											"key": "toDate",
+											"value": "1715533199"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_yesterday",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate=1716570000&toDate=1716656399",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1716570000"
+										},
+										{
+											"key": "toDate",
+											"value": "1716656399"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Overview_week",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{env}}/organizations/{{id}}/statistics/payment-link/chart?fromDate=1716138000&toDate=1716742799",
+									"host": [
+										"{{env}}"
+									],
+									"path": [
+										"organizations",
+										"{{id}}",
+										"statistics",
+										"payment-link",
+										"chart"
+									],
+									"query": [
+										{
+											"key": "fromDate",
+											"value": "1716138000"
+										},
+										{
+											"key": "toDate",
+											"value": "1716742799"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Forgot-password",
+					"item": [
+						{
+							"name": "Positive tests",
+							"item": [
+								{
+									"name": "quen mat khau thanh cong",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"pm.test(\"success\", function () {\r",
+													"    pm.expect(pm.response.text()).to.include(\"success\");\r",
+													"});\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Code is 00\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"00\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"{{email_forgot}}\"\r\n    }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/forgot-password"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Negative tests",
+							"item": [
+								{
+									"name": "Email_Chua_Dang_ky Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													";let jsonData = pm.response.json()\r",
+													"pm.test(\"Không tìm thấy email\", function () {\r",
+													"    pm.expect(pm.response.text()).to.include(\"Không tìm thấy email\");\r",
+													"});\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"hoanghongvan@gmail.com\"\r\n    }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/forgot-password"
+									},
+									"response": []
+								},
+								{
+									"name": "email_contains_space Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"pm.test(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {\r",
+													"    pm.expect(pm.response.text()).to.include(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\");\r",
+													"});\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										},
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													""
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"hoanghongvan  @gmail.com\"\r\n    }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/forgot-password"
+									},
+									"response": []
+								},
+								{
+									"name": "Email_khong_Dung_Dinh_Dang Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()\r",
+													"pm.test(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\", function () {\r",
+													"    pm.expect(pm.response.text()).to.include(\"Email không đúng định dạng cho phép, vui lòng thử mail khác.\");\r",
+													"});\r",
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});\r",
+													"pm.test(\"Code is 20\", function () {\r",
+													"    pm.expect(jsonData.code).to.eql(\"20\");\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\r\n    \"email\": \"hoanghongvan\"\r\n    }",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "{{env}}/auth/forgot-password"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "payment-link",
+					"item": [
+						{
+							"name": "Positive tests",
+							"item": [
+								{
+									"name": "payment_link_tat ca",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{env}}/organizations/{{org_id}}/statistics/payment-link?page=0&pageSize=20&typeOrder=",
+											"host": [
+												"{{env}}"
+											],
+											"path": [
+												"organizations",
+												"{{org_id}}",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "20"
+												},
+												{
+													"key": "typeOrder",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "payment_link_id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [
+											{
+												"key": "x-client-id",
+												"value": "efc11173-fd61-4550-9649-c78cfa01735f"
+											},
+											{
+												"key": "x-api-key",
+												"value": "5f4126dd-725a-4e23-8b0a-eafa11da06ba"
+											}
+										],
+										"url": "https://api-merchant.payos.vn/v2/payment-requests/683"
+									},
+									"response": []
+								},
+								{
+									"name": "payment_link_da thanh toan",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{env}}/organizations/{{id}}/statistics/payment-link?typeOrder=PAID&page=0&pageSize=20",
+											"host": [
+												"{{env}}"
+											],
+											"path": [
+												"organizations",
+												"{{id}}",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "typeOrder",
+													"value": "PAID"
+												},
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "payment_link_cho thanh toan Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{env}}/organizations/{{id}}/statistics/payment-link?typeOrder=PENDING&page=0&pageSize=20",
+											"host": [
+												"{{env}}"
+											],
+											"path": [
+												"organizations",
+												"{{id}}",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "typeOrder",
+													"value": "PENDING"
+												},
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "payment_link_huy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{env}}/organizations/{{id}}/statistics/payment-link?typeOrder=CANCELLED&page=0&pageSize=2",
+											"host": [
+												"{{env}}"
+											],
+											"path": [
+												"organizations",
+												"{{id}}",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "typeOrder",
+													"value": "CANCELLED"
+												},
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "2"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "payment_id",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{env}}/organizations/{{id}}/statistics/payment-link?typeOrder=CANCELLED&page=0&pageSize=20&paymentGatewayId=2276",
+											"host": [
+												"{{env}}"
+											],
+											"path": [
+												"organizations",
+												"{{id}}",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "typeOrder",
+													"value": "CANCELLED"
+												},
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "20"
+												},
+												{
+													"key": "paymentGatewayId",
+													"value": "2276"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "info connect Copy",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-client-id",
+												"value": "b5dbfc8b-a298-482f-a887-a01f0f98dd3c",
+												"type": "text"
+											},
+											{
+												"key": "x-api-key",
+												"value": "33e6fdec-bd68-41cc-916b-10d9a45e2a5b",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\"webhookUrl\": \"http://lenna.rf.gd/wc-api/verify_payos_webhook/\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "https://api-merchant.payos.vn/confirm-webhook"
+									},
+									"response": []
+								},
+								{
+									"name": "CHỈNH SỬA STATE",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-client-id",
+												"value": "b5dbfc8b-a298-482f-a887-a01f0f98dd3c"
+											},
+											{
+												"key": "x-api-key",
+												"value": "33e6fdec-bd68-41cc-916b-10d9a45e2a5b"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\"state\":\"PENDING\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "https://api-app.payos.vn/organizations/aa132e9911b211ef915f0242ac110002/payment-gateways/2294/state"
+									},
+									"response": []
+								},
+								{
+									"name": "check_status_ xíu xem lại Copy",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"url": "https://pay.payos.vn/api/web/684/check-status"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Accounts",
+					"item": [
+						{
+							"name": "Negative tests",
+							"item": [
+								{
+									"name": "tao tai khoan khong thanh cong",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"fiServiceUuid\":\"ec53eedf-9f50-11ee-a287-42010a400022\",\"accountNumber\":\"0983253551\",\"accountName\":\"NGUYEN DANG KIM TUYEN\",\"mobileNumber\":\"NGUYEN DANG KIM TUYEN\",\"identificationNumber\":\"080303007142\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "https://production.bankhub.dev/app/grants/b37148ed-1935-11ef-9269-02cf4c5ff398/qr-pay/create-merchant"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Positive tests",
+							"item": [
+								{
+									"name": "thêm ngân hàng coi sau",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"fiServiceUuid\":\"89e381bf-77c2-11ee-a54b-42010a400021\",\"identificationNumber\":\"042201000293\",\"accountNumber\":\"0368746190\",\"accountName\":\"DANG DAI\",\"requestId\": \"5QgyvY9K4uaHYPhx\"}\r\n",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://sandbox.api.payos.vn/organizations/dfcd104218de11ef96160022481a0395/bankhub/grant/token?bank_connect_method_id=21&provider=BANKHUB",
+											"protocol": "https",
+											"host": [
+												"sandbox",
+												"api",
+												"payos",
+												"vn"
+											],
+											"path": [
+												"organizations",
+												"dfcd104218de11ef96160022481a0395",
+												"bankhub",
+												"grant",
+												"token"
+											],
+											"query": [
+												{
+													"key": "bank_connect_method_id",
+													"value": "21"
+												},
+												{
+													"key": "provider",
+													"value": "BANKHUB"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Bank_Succes_organization",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": "{{env}}/organizations/{{id}}/banks"
+									},
+									"response": []
+								},
+								{
+									"name": "Bank_id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": "{{env}}/organizations/{{id}}/accounts/1958"
+									},
+									"response": []
+								},
+								{
+									"name": "delete account",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": "{{env}}/organizations/{{org_id}}/accounts/102"
+									},
+									"response": []
+								},
+								{
+									"name": "lấy ds ngân hàng",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": "{{env}}/organizations/{{id}}/accounts/"
+									},
+									"response": []
+								},
+								{
+									"name": "check_bank",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\"fiServiceUuid\":\"89e381bf-77c2-11ee-a54b-42010a400021\",\"identificationNumber\":\"042201000293\",\"accountNumber\":\"0368746190\",\"accountName\":\"DANG DAI\"}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "https://development.bankhub.dev/app/grants/b0ea8af7-1aa8-11ef-9616-0022481a0395/qr-pay/check"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Payment-gateways",
+					"item": [
+						{
+							"name": "Positive tests",
+							"item": [
+								{
+									"name": "Payment-gateways",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": "{{env}}/organizations/{{id}}/payment-gateways"
+									},
+									"response": []
+								},
+								{
+									"name": "Payment-gateways_id",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"Status code is 200\", function () {\r",
+													"    pm.response.to.have.status(200);\r",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": "{{env}}/organizations/{{id}}/payment-gateways/2294"
+									},
+									"response": []
+								},
+								{
+									"name": "payment_link_da thanh toan Copy",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript",
+												"packages": {}
+											}
+										}
+									],
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{env}}/organizations/{{org_id}}/statistics/payment-link?typeOrder=PAID&page=0&pageSize=20",
+											"host": [
+												"{{env}}"
+											],
+											"path": [
+												"organizations",
+												"{{org_id}}",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "typeOrder",
+													"value": "PAID"
+												},
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "xoá_payment-gateway Copy",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "DELETE",
+										"header": [],
+										"url": "{{env}}/organizations/{{org_id}}/payment-gateways/2253"
+									},
+									"response": []
+								},
+								{
+									"name": "lấy toàn bộ danh sách giao dịch",
+									"protocolProfileBehavior": {
+										"disableBodyPruning": true
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "                {\"status\": \"CANCELLED\",",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "https://api-app.payos.vn/organizations/aa132e9911b211ef915f0242ac110002/statistics/payment-link?page=0&pageSize=20&typeOrder=",
+											"protocol": "https",
+											"host": [
+												"api-app",
+												"payos",
+												"vn"
+											],
+											"path": [
+												"organizations",
+												"aa132e9911b211ef915f0242ac110002",
+												"statistics",
+												"payment-link"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "0"
+												},
+												{
+													"key": "pageSize",
+													"value": "20"
+												},
+												{
+													"key": "typeOrder",
+													"value": ""
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "cancel 1 đơn đã thanh toán",
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{access_token}}"
+											}
+										},
+										"method": "POST",
+										"header": [
+											{
+												"key": "x-client-id",
+												"value": "b5dbfc8b-a298-482f-a887-a01f0f98dd3c",
+												"type": "text"
+											},
+											{
+												"key": "x-api-key",
+												"value": "33e6fdec-bd68-41cc-916b-10d9a45e2a5b",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\"cancellationReason\": \"Changed my mind\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": "https://api-merchant.payos.vn/v2/payment-requests/618/cancel"
+									},
+									"response": []
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Members",
+					"item": [
+						{
+							"name": "Pay_in",
+							"item": [
+								{
+									"name": "Memberships Copy",
+									"item": [
+										{
+											"name": "Positive tests",
+											"item": [
+												{
+													"name": "Get memberships success",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"exec": [
+																	""
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 200",
+																	"pm.test(\"Status code is 200\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});",
+																	"",
+																	"//Get organization id",
+																	"let organizationIds = jsonData.data[0].organization.id;",
+																	"",
+																	"// Lưu trữ token vào biến môi trường để sử dụng cho các yêu cầu tiếp theo",
+																	"pm.collectionVariables.set(\"organizationId\",organizationIds)",
+																	"",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": {
+																"token": "{{access_token}}"
+															}
+														},
+														"method": "GET",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												},
+												{
+													"name": "Get memberships no data",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"exec": [
+																	"let email_nodata = \"chouchousqa@gmail.com\"",
+																	"let pwd_nodata = \"cc2c2a7eba05390904a5157a33c083ac1f8e418c51440e5389832b2869048e900b828ff5de74f1c25bb4c88b38935861873307419e5a011a4ddb6396b11f07b8\"",
+																	"",
+																	"// Định nghĩa thông tin API",
+																	"var url = pm.environment.get(\"env\") + \"auth/sign-in\";",
+																	"var method = 'POST';",
+																	"var header = {",
+																	"    'Content-Type': 'application/json',",
+																	"    'Accept': 'application/json'",
+																	"};",
+																	"var body = {",
+																	"    mode: 'raw',",
+																	"    raw: JSON.stringify({ email: email_nodata, password: pwd_nodata })",
+																	"};",
+																	"",
+																	"// Thực hiện gọi API",
+																	"pm.sendRequest({",
+																	"    url: url,",
+																	"    method: method,",
+																	"    header: header,",
+																	"    body: body",
+																	"}, function (err, response) {",
+																	"    console.log(\"Response:\", response);",
+																	"    ",
+																	"    // Kiểm tra lỗi",
+																	"    if (err) {",
+																	"        console.log(\"Error:\", err);",
+																	"    } else {",
+																	"        // Lấy token từ phản hồi và lưu vào biến môi trường",
+																	"        var token = response.json().data.token;",
+																	"        pm.variables.set(\"nodata_token\", token);",
+																	"    }",
+																	"});",
+																	"",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 200",
+																	"pm.test(\"Status code is 200\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});",
+																	"",
+																	"",
+																	"// Kiểm tra No data",
+																	"pm.test(\"No data\", function(){",
+																	"    pm.expect(jsonData.data[0].organization.type).to.eql(null)",
+																	"});",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": {
+																"token": "{{nodata_token}}"
+															}
+														},
+														"method": "GET",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "Unverified email",
+											"item": [
+												{
+													"name": "Get membership unverified account",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 200",
+																	"pm.test(\"Status code is 200\", function () {",
+																	"    pm.response.to.have.status(200);",
+																	"});",
+																	"",
+																	"// Kiểm tra response có desc là success",
+																	"pm.test(\"Desc\", function () {",
+																	"    pm.expect(jsonData.desc).to.eql(\"Email của bạn chưa được xác thực, tiến hành xác thực để thực hiện các chức năng khác.\");",
+																	"});",
+																	"",
+																	"// Kiểm tra code",
+																	"pm.test(\"Code\", function () {",
+																	"    pm.expect(jsonData.code).to.eql(\"613\");",
+																	"});",
+																	"",
+																	"",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": {
+																"token": "{{unverified_access_token}}"
+															}
+														},
+														"method": "GET",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												}
+											]
+										},
+										{
+											"name": "Negative tests",
+											"item": [
+												{
+													"name": "Get membership Incorrect access token",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 401",
+																	"pm.test(\"Status code is 401\", function () {",
+																	"    pm.response.to.have.status(401);",
+																	"});",
+																	"",
+																	"// Kiểm tra desc ",
+																	"pm.test(\"Msg\", function () {",
+																	"    pm.expect(jsonData.message).to.eql(\"Unauthorized\");",
+																	"});",
+																	"",
+																	"// Kiểm tra code",
+																	"pm.test(\"status is 401\", function () {",
+																	"    pm.expect(jsonData.status).to.eql(\"401\");",
+																	"});",
+																	"",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "prerequest",
+															"script": {
+																"exec": [
+																	"pm.variables.set(\"wrong_token\", \"123\") "
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": {
+																"token": "{{wrong_token}}"
+															}
+														},
+														"method": "GET",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												},
+												{
+													"name": "Get membership expired access token",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"exec": [
+																	"pm.variables.set(\"expired_token\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjJiMmU3NTlmZTg1NzExZWVhMzIzMDAyMjQ4MWEwMzk1IiwiZmlyc3RfbmFtZSI6IlRoxqFtIiwibGFzdF9uYW1lIjoiTOG6oWkiLCJhdmF0YXJfdXJsIjpudWxsLCJlbWFpbCI6InRob21sYWkuY3Jvc3N0ZWNoQGdtYWlsLmNvbSIsImlhdCI6MTcxNTYyNTA4NCwiZXhwIjoxNzE1NjI4Njg0fQ.bGsL-0Q_HGbmtiIaGF-EPp6-DyG_-dMrO0dIhHgzPH8\")"
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 401",
+																	"pm.test(\"Status code is 401\", function () {",
+																	"    pm.response.to.have.status(401);",
+																	"});",
+																	"",
+																	"// Kiểm tra desc ",
+																	"pm.test(\"Msg\", function () {",
+																	"    pm.expect(jsonData.message).to.eql(\"Unauthorized\");",
+																	"});",
+																	"",
+																	"// Kiểm tra code",
+																	"pm.test(\"status is 401\", function () {",
+																	"    pm.expect(jsonData.status).to.eql(\"401\");",
+																	"});"
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": {
+																"token": "{{access_token}}"
+															}
+														},
+														"method": "GET",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												},
+												{
+													"name": "Get membership missing access token",
+													"event": [
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 401",
+																	"pm.test(\"Status code is 401\", function () {",
+																	"    pm.response.to.have.status(401);",
+																	"});",
+																	"",
+																	"// Kiểm tra desc ",
+																	"pm.test(\"Msg\", function () {",
+																	"    pm.expect(jsonData.message).to.eql(\"Unauthorized\");",
+																	"});",
+																	"",
+																	"// Kiểm tra code",
+																	"pm.test(\"status is 401\", function () {",
+																	"    pm.expect(jsonData.status).to.eql(\"401\");",
+																	"});",
+																	"",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												},
+												{
+													"name": "Get membership Wrong method",
+													"event": [
+														{
+															"listen": "prerequest",
+															"script": {
+																"exec": [
+																	""
+																],
+																"type": "text/javascript"
+															}
+														},
+														{
+															"listen": "test",
+															"script": {
+																"exec": [
+																	"let jsonData = pm.response.json()",
+																	"",
+																	"// Kiểm tra mã trạng thái phản hồi là 404",
+																	"pm.test(\"Status code is 404\", function () {",
+																	"    pm.response.to.have.status(404);",
+																	"});",
+																	"",
+																	"// Kiểm tra response có message là success",
+																	"pm.test(\"message is Endpoint not found.\", function () {",
+																	"    pm.expect(jsonData.message).to.eql(\"Endpoint not found.\");",
+																	"});",
+																	"",
+																	""
+																],
+																"type": "text/javascript"
+															}
+														}
+													],
+													"protocolProfileBehavior": {
+														"disabledSystemHeaders": {}
+													},
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": {
+																"token": "{{access_token}}"
+															}
+														},
+														"method": "POST",
+														"header": [],
+														"url": "{{env}}/memberships"
+													},
+													"response": []
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "Positive tests",
+									"item": [
+										{
+											"name": "Pay_in",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": {
+														"token": "{{access_token}}"
+													}
+												},
+												"method": "GET",
+												"header": [],
+												"url": "{{env}}/organizations/{{org_id}}/usage-billing/pay_in"
+											},
+											"response": []
+										},
+										{
+											"name": "pay_in",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": {
+														"token": "{{access_token}}"
+													}
+												},
+												"method": "POST",
+												"header": [],
+												"body": {
+													"mode": "raw",
+													"raw": "{\"returnUrl\": \"https://my.payos.vn/430e258ef3b511ee915f0242ac110002/pay\", \"price\": 0}",
+													"options": {
+														"raw": {
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{env}}/organizations/{{org_id}}/plans/4/purchase?code=pay_in",
+													"host": [
+														"{{env}}"
+													],
+													"path": [
+														"organizations",
+														"{{org_id}}",
+														"plans",
+														"4",
+														"purchase"
+													],
+													"query": [
+														{
+															"key": "code",
+															"value": "pay_in"
+														}
+													]
+												}
+											},
+											"response": []
+										},
+										{
+											"name": "pay_in",
+											"event": [
+												{
+													"listen": "test",
+													"script": {
+														"exec": [
+															"pm.test(\"Status code is 200\", function () {\r",
+															"    pm.response.to.have.status(200);\r",
+															"});"
+														],
+														"type": "text/javascript",
+														"packages": {}
+													}
+												}
+											],
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": {
+														"token": "{{access_token}}"
+													}
+												},
+												"method": "DELETE",
+												"header": [],
+												"url": "{{env}}/organizations/{{org_id}}/subscriptions/334"
+											},
+											"response": []
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "members",
+							"item": [
+								{
+									"name": "Get memberships no data Copy",
+									"event": [
+										{
+											"listen": "prerequest",
+											"script": {
+												"exec": [
+													"let email_nodata = \"chouchousqa@gmail.com\"",
+													"let pwd_nodata = \"cc2c2a7eba05390904a5157a33c083ac1f8e418c51440e5389832b2869048e900b828ff5de74f1c25bb4c88b38935861873307419e5a011a4ddb6396b11f07b8\"",
+													"",
+													"// Định nghĩa thông tin API",
+													"var url = pm.environment.get(\"env\") + \"auth/sign-in\";",
+													"var method = 'POST';",
+													"var header = {",
+													"    'Content-Type': 'application/json',",
+													"    'Accept': 'application/json'",
+													"};",
+													"var body = {",
+													"    mode: 'raw',",
+													"    raw: JSON.stringify({ email: email_nodata, password: pwd_nodata })",
+													"};",
+													"",
+													"// Thực hiện gọi API",
+													"pm.sendRequest({",
+													"    url: url,",
+													"    method: method,",
+													"    header: header,",
+													"    body: body",
+													"}, function (err, response) {",
+													"    console.log(\"Response:\", response);",
+													"    ",
+													"    // Kiểm tra lỗi",
+													"    if (err) {",
+													"        console.log(\"Error:\", err);",
+													"    } else {",
+													"        // Lấy token từ phản hồi và lưu vào biến môi trường",
+													"        var token = response.json().data.token;",
+													"        pm.variables.set(\"nodata_token\", token);",
+													"    }",
+													"});",
+													"",
+													""
+												],
+												"type": "text/javascript"
+											}
+										},
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"let jsonData = pm.response.json()",
+													"",
+													"// Kiểm tra mã trạng thái phản hồi là 200",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"",
+													"// Kiểm tra No data",
+													"pm.test(\"No data\", function(){",
+													"    pm.expect(jsonData.data[0].organization.type).to.eql(null)",
+													"});",
+													""
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"protocolProfileBehavior": {
+										"disabledSystemHeaders": {}
+									},
+									"request": {
+										"auth": {
+											"type": "bearer",
+											"bearer": {
+												"token": "{{nodata_token}}"
+											}
+										},
+										"method": "GET",
+										"header": [],
+										"url": "{{env}}/memberships"
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{env}}/organizations/{{id}}/members"
+							},
+							"response": []
+						},
+						{
+							"name": "Add_member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"email\": \"tocdocuarua111@gmail.com\", \"role\": \"ADMIN\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{env}}/organizations/{{id}}/members"
+							},
+							"response": []
+						},
+						{
+							"name": "delete_member",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": "{{env}}/organizations/{{id}}/members/00d8cc921a0211ef915f0242ac110002"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Đang làm",
+					"item": [
+						{
+							"name": "link thanh toán api",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"// Ví dụ về Test script có thể có lỗi cú pháp\r",
+											"pm.test(\"Status code is 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    var jsonData = pm.response.json();\r",
+											"    // Lỗi cú pháp có thể xảy ra nếu có dấu ngoặc hoặc dấu phẩy thừa/thiếu\r",
+											"    console.log(\"Response:\", jsonData);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "x-client-id",
+										"value": "34a65c9f-f7c4-460a-9863-f88b2b839369"
+									},
+									{
+										"key": "x-api-key",
+										"value": "d5877d51-e3ce-4fa4-ae1a-ab716d46e48f"
+									},
+									{
+										"key": "Authorization",
+										"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImRmY2IwMzliMThkZTExZWY5NjE2MDAyMjQ4MWEwMzk1IiwiZmlyc3RfbmFtZSI6IkRBSSIsImxhc3RfbmFtZSI6IkRBTkciLCJhdmF0YXJfdXJsIjpudWxsLCJlbWFpbCI6InN1c2llY2FtaWxsZTVAZ21haWwuY29tIiwiaWF0IjoxNzE2NjIyMDQzLCJleHAiOjE3MTY2MjU2NDN9.fwc5_HCI0wnMkxdpcPbIDIZg3ViQEqhrwQ4V3vyx1GM"
+									},
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"orderCode\": 1,\r\n    \"amount\": 56000000,\r\n    \"description\": \"VQRIO123\",\r\n    \"buyerName\": \"Nguyen Van A\",\r\n    \"buyerEmail\": \"buyer-email@gmail.com\",\r\n    \"buyerPhone\": \"090xxxxxxx\",\r\n    \"buyerAddress\": \"số nhà, đường, phường, tỉnh hoặc thành phố\",\r\n    \"items\": [\r\n        {\r\n            \"name\": \"Iphone\",\r\n            \"quantity\": 2,\r\n            \"price\": 28000000\r\n        }\r\n    ],\r\n    \"cancelUrl\": \"http://lenna.rf.gd/wc-api/verify_payos_webhook/\",\r\n    \"returnUrl\": \"http://lenna.rf.gd/wc-api/verify_payos_webhook/\",\r\n    \"expiredAt\": 1696559798,\r\n    \"signature\": \"af80ef1b7f2f48aeff7bb2f3dc9807d3107072771fc6a03da04f4c791004125a\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://api-merchant.payos.vn/v2/payment-requests"
+							},
+							"response": []
+						},
+						{
+							"name": "tắt chế độ thanh toána",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"url": "https://api-app.payos.vn/organizations/aa132e9911b211ef915f0242ac110002/payment-gateways/2250/state"
+							},
+							"response": []
+						},
+						{
+							"name": "xoá kênh thanh toán",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": "{{env}}/organizations/{{id}}/payment-gateways/2201"
+							},
+							"response": []
+						},
+						{
+							"name": "chỉnh sửa kênh thanh toán",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{access_token}}"
+									}
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"webhook_url\":\"https://payos.vn.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{env}}/organizations/{{id}}/payment-gateways/229"
+							},
+							"response": []
+						},
+						{
+							"name": "login_sandbox",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"email\": \"susiecamille5@gmail.com\",\r\n\"password\":\"963a13729dc91976c3280e2e157beafa1dc3421606ad98d0fd414be929a5015862df1c6391132050177786cc16b7f6d3c5bae69c9f6f513895d29e418c3e513b\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "https://sandbox.api.payos.vn/auth/sign-in"
+							},
+							"response": []
+						},
+						{
+							"name": "New Request",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcwZjY4ZTVlMWE3MTExZWY5NjE2MDAyMjQ4MWEwMzk1IiwiZmlyc3RfbmFtZSI6Imhvw6BuZyIsImxhc3RfbmFtZSI6InZhbiIsImF2YXRhcl91cmwiOm51bGwsImVtYWlsIjoidG9jZG9jdWFydWFAZ21haWwuY29tIiwiaWF0IjoxNzE2NjMxODIxLCJleHAiOjE3MTY2MzU0MjF9.6KeeQcMjysBdng1mwuwu8PTDoK1ixBNHb0UAYofH0kQ"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "https://sandbox.payos.vn/70f813f71a7111ef96160022481a0395/dashboard"
+							},
+							"response": []
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"exec": [
+							"pm.sendRequest({",
+							"    url: YourURL",
+							"    method: 'POST',",
+							"    header: {",
+							"        'content-type': 'application/json'",
+							"    },",
+							"    body: {",
+							"        mode: 'raw',",
+							"        raw: JSON.stringify({ YOUR PARAM TO CREATE THE TOKEN IF NEED IT })",
+							"    }",
+							"}, (err, res) => pm.collectionVariables.set(\"TOKEN\", res.json().accessToken));"
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"value": "",
+			"disabled": true
+		},
+		{
+			"key": "email",
+			"value": "susiecamille5@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "pwd",
+			"value": "963a13729dc91976c3280e2e157beafa1dc3421606ad98d0fd414be929a5015862df1c6391132050177786cc16b7f6d3c5bae69c9f6f513895d29e418c3e513b",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "org_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "email_forgot",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "unverified_access_token",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImY0ZjcxZDZhMWE5YTExZWY5NjE2MDAyMjQ4MWEwMzk1IiwiZmlyc3RfbmFtZSI6Imhvw6BuZyIsImxhc3RfbmFtZSI6InZhbiIsImF2YXRhcl91cmwiOm51bGwsImVtYWlsIjoiaG9hbmdob25ndmFuMjAwMTIwMDJAZ21haWwuY29tIiwiaWF0IjoxNzE2NjQzOTAxLCJleHAiOjE3MTY2NDc1MDF9.2Wb8iS7C4YnFJC9lLx6tdLbVMkduQ8bE_VkF8Aih1k4",
+			"type": "string"
+		},
+		{
+			"key": "pwd_unverified_email",
+			"value": "6b137473186211c5f8fc0cf42f54cf8edb646248576aafbae9e1992a4fe9bd66b26da5530e4e7410e58ed4a6c25cf9173e6a3f2335b405710574991e8aa1fa64",
+			"type": "string"
+		},
+		{
+			"key": "unverified_email",
+			"value": "giangpk33@gmail.com",
+			"type": "string"
+		},
+		{
+			"key": "From",
+			"value": ""
+		},
+		{
+			"key": "To",
+			"value": ""
+		}
+	]
+}
